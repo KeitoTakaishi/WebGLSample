@@ -73,3 +73,45 @@ stats.end();
 
 ## shader
 - https://nogson2.hatenablog.com/entry/2017/12/24/193017
+- https://nogson2.hatenablog.com/entry/2017/08/15/213233
+- https://nogson2.hatenablog.com/entry/2017/12/21/011736
+- http://izmiz.hateblo.jp/entry/2015/04/19/223456
+- https://nogson2.hatenablog.com/entry/2017/08/15/213233
+- https://docs.google.com/presentation/d/1NMhx4HWuNZsjNRRlaFOu2ysjo04NgcpFlEhzodE8Rlg/edit#slide=id.g3689912efb_0_91
+
+```js
+return new THREE.Mesh(
+        new THREE.PlaneBufferGeometry(512, 512),
+        new THREE.RawShaderMaterial({
+            uniforms: this.uniforms,
+            vertexShader: require('../../../../glsl/zoomblur.vert'),
+            fragmentShader: require('../../../../glsl/zoomblur.frag'),
+        })
+    );
+```
+
+### shader(PostProcessing系を使うまでの手順)
+1. 必要なファイル
+
+EffectComposer.js(post processingを追加するために必要)．
+MaskPass.js, Shader.Pass, CopyShader.jsはEffectComposer.jsで内部的に使われて
+いるため必要．そしてRenderPassによって描画パスを追加できるようになる．
+
+## Midi
+- http://hackist.jp/?p=6427
+
+### type
+i (整数)
+f (float)
+v2 (THREE.Vector2)
+v3 (THREE.Vector3)
+v4 (THREE.Vector4)
+c (THREE.Color)
+m4 (THREE.Matrix4)
+t (THREE.Texture)
+
+
+
+## 検索
+- setPixelRatio
+- assign

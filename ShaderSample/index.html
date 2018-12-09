@@ -1,0 +1,148 @@
+<html>
+	<head>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+
+	<body>
+		<script src="../Three_js/build/three.js"></script>
+		<script src="../Three_js/examples/js/controls/OrbitControls.js"></script>
+		<script src="../Three_js/examples/js/libs/stats.min.js"></script>
+		<script src="../Three_js/examples/js/libs/dat.gui.min.js"></script>
+		<script src='lib/postprocessing/EffectComposer.js'></script>
+		<script src='lib/postprocessing/RenderPass.js'></script>
+		<script src='lib/shaders/RGBShiftShader.js'></script>
+		<script src='lib/postprocessing/ShaderPass.js'></script>
+		<script src='lib/postprocessing/MaskPass.js'></script>
+		<script src='lib/shaders/CopyShader.js'></script>
+		<script src='lib/shaders/FilmShader.js'></script>
+
+		<script>
+      var scene, camera,renderer;
+			var composer, renderPass;
+			var controls;
+			var material;
+			var cube;
+			var arrSize = 15;
+			init();
+			animate();
+
+			function init(){
+				scene = new THREE.Scene();
+				camera = new THREE.PerspectiveCamera(
+					 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+				camera.position.z = 5;
+
+				controls = new THREE.OrbitControls(camera);
+
+				lightInit();
+				renderInit();
+				geomInit();
+			}
+
+			var myEffect = {
+		    uniforms: {
+		        "tDiffuse": { type: "t", value: null },
+		        "amount": { value: 1.0, type:'f'}
+		    },
+		    vertexShader: [
+		        "varying vec2 vUv;",
+		        "void main() {",
+		        "vUv = uv;",
+		        "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+		        "}"
+		    ].join("\n"),
+		    fragmentShader: [
+		        "uniform float amount;",
+		        "uniform sampler2D tDiffuse;",
+		        "varying vec2 vUv;",
+		        "void main() {",
+		        "vec4 color = texture2D( tDiffuse, vUv );",
+		        "gl_FragColor = vec4( color.rgb , color.a );",
+		        "gl_FragColor.r = texture2D( tDiffuse, vUv + vec2(0.5,0.0)).r;",
+		        "gl_FragColor.g = texture2D( tDiffuse, vUv - vec2(0.1,0.0)).g;",
+		        "}"
+		    ].join("\n")
+			}
+
+
+			function lightInit(){
+				var ambLight = new THREE.AmbientLight(0xff0033);
+				scene.add(ambLight);
+
+				var spotLight = new THREE.SpotLight(0xffffff);
+				spotLight.angle = Math.PI / 3; //開き具合
+				spotLight.penumbra = 0.7; //減衰率
+				spotLight.intencity = 1; //強度
+				spotLight.castShadow = true;
+				spotLight.position.set( 0, 2.5, 0.0 );
+				spotLight.castShadow = true;
+				spotLight.shadow.camera.near = 3;
+				spotLight.shadow.camera.far = 10;
+				spotLight.shadow.mapSize.width = 1024;
+				spotLight.shadow.mapSize.height = 1024;
+				scene.add(spotLight);
+
+				var dirLight = new THREE.DirectionalLight( 0xaa505a, 1 );
+				dirLight.castShadow = true;
+				dirLight.position.set( 0, 2.5, 0.0 );
+				scene.add(dirLight);
+
+			}
+
+			function renderInit(){
+				renderer = new THREE.WebGLRenderer();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.shadowMap.enabled = true;
+
+				composer = new THREE.EffectComposer(renderer);
+				//current scene
+				renderPass = new THREE.RenderPass(scene, camera);
+				composer.addPass(renderPass);
+
+				document.body.appendChild( renderer.domElement );
+
+				var customPass = new THREE.ShaderPass(myEffect);
+				customPass.renderToScreen = true;
+				composer.addPass(customPass);
+				composer.render();
+			}
+
+			function geomInit(){
+				material = new THREE.MeshPhongMaterial({
+					color : 0x2222ff,
+					shininess : 100,
+					side : THREE.DoubleSide,
+				});
+
+				var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+
+				cube = new Array(arrSize);
+				for(var i = 0; i < arrSize; i++){
+						cube[i] = new THREE.Mesh( geometry, material );
+						var z = -3.0 * Math.random();
+						cube[i].position.set(
+							4.0*(2.0*Math.random()-1.0), 4.0*(2.0*Math.random()-1.0), z);
+						scene.add( cube[i] );
+				}
+			}
+
+			function animate() {
+				for(var i = 0; i < arrSize; i++){
+						cube[i].rotation.x += 0.01;
+						cube[i].rotation.y += 0.01;
+				}
+				//renderer.render( scene, camera );
+				composer.render();
+				controls.update();
+				requestAnimationFrame( animate );
+			}
+
+
+		</script>
+	</body>
+</html>
