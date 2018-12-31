@@ -15,19 +15,15 @@
 			var ParamsShaderMaterial = {
 				uniforms: {
 					"time": {value: 1.0},
-					"LightDir" : { type: "v3", value: new THREE.Vector3( 0, 1, 2 ) },
-					"invMatrix" : { type: "m4", value: new THREE.Matrix4() }
 				},
 				vertexShader: [
 					"precision mediump float;",
 					"uniform float time;",
-					"uniform vec3 LightDir;",
 					"varying vec3 vNormal;",
 					"void main() {",
 					"gl_PointSize = 1.5;",
           "vec3 p = position;",
-					"float speed = 0.0;",
-          "float t = time * speed;",
+          "float t = time * 0.001;",
 					"p += 10.0*normal*sin(t + p.x * 100.0 + p.y * 100.0 + p.z * 100.0);",
           //"p.y += 100.0*sin(t);",
 					"vNormal = normal;",
@@ -37,12 +33,20 @@
 				fragmentShader: [
 					"precision mediump float;",
 					"uniform float time;",
-					"uniform vec3 LightDir;",
 					"varying vec3 vNormal;",
 					"void main() {",
-					"float d = dot(vNormal, normalize(vec3(85.0*cos(time*0.001), 0.0, 85.0*sin(time*0.001))) );",
-					"d = clamp(d, 0.1, 1.0);",
-					"gl_FragColor = vec4(d + 0.09, d + 0.09, d + 0.06, 1.0);",
+					"float r = 65.0;",
+					"float speed = 0.0014;",
+					"vec3 LightDir = vec3(r*cos(time*speed), r*.5*sin(time*speed), r*sin(-time*speed));",
+					"vec3 Ldir = normalize(LightDir);",
+					"vec3 nor = normalize(vNormal);",
+					"vec3 camPos = normalize(cameraPosition);",
+					"vec3 halfV = normalize(camPos + Ldir);",
+					"float d = dot(vNormal, normalize(vec3(r*cos(time*speed), r*0.5*sin(time*speed), r*sin(-time*speed))) );",
+					"float specular = pow(clamp(dot(nor, halfV), 0.0, 1.0), 50.0);",
+					"d = clamp(d, 0.01, 0.78);",
+					"vec4 col = vec4(0.65, 0.7, 0.7, 1.0);",
+					"gl_FragColor = (col * vec4(d, d, d, 1.0)) + vec4(vec3(specular), 1.0) + vec4(0.2, 0.24, 0.29, 1.0);",
 					"}"
 				].join( "\n" ),
 			}
@@ -78,8 +82,6 @@
       function render(){
         time = performance.now();
         material.uniforms.time.value = time;
-				material.uniforms.LightDir.value = THREE.Vector3(50.0, 50.0, 0.0);
-				//material.uniforms.ininvMatrix.value =
         renderer.render(scene, camera);
       }
 
