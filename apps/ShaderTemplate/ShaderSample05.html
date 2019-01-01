@@ -1,4 +1,7 @@
-<!--平行光源-->
+<!--
+平行光源
+specularLight
+-->
 
 <html>
 	<head>
@@ -11,29 +14,47 @@
 	<body>
 		<script src="../../Three_js/build/three.js"></script>
 		<script src="minMatrix.js"></script>
+		<script src="../../libs/dat.gui.min.js"></script>
 		<script>
 			var ParamsShaderMaterial = {
 				uniforms: {
 					"time": {value: 1.0},
+					"expVal": {value: 50.0},
+					"ambR": {value: .1},
+					"ambG": {value: .2},
+					"ambB": {value: .2},
+					"amp": {value: 1.0},
+
 				},
 				vertexShader: [
 					"precision mediump float;",
+
 					"uniform float time;",
+					"uniform float expVal;",
+					"uniform float amp;",
+
 					"varying vec3 vNormal;",
 					"void main() {",
 					"gl_PointSize = 1.5;",
           "vec3 p = position;",
           "float t = time * 0.001;",
-					"p += 10.0*normal*sin(t + p.x * 100.0 + p.y * 100.0 + p.z * 100.0);",
-          //"p.y += 100.0*sin(t);",
+					"p += amp*normal*sin(t + p.x * 100.0 + p.y * 100.0 + p.z * 100.0);",
 					"vNormal = normal;",
 					"gl_Position = projectionMatrix * modelViewMatrix * vec4( p, 1.0 );",
 					"}"
 				].join( "\n" ),
 				fragmentShader: [
 					"precision mediump float;",
+
 					"uniform float time;",
+					"uniform float expVal;",
+					"uniform float ambR;",
+					"uniform float ambG;",
+					"uniform float ambB;",
+
+
 					"varying vec3 vNormal;",
+
 					"void main() {",
 					"float r = 65.0;",
 					"float speed = 0.0014;",
@@ -43,10 +64,10 @@
 					"vec3 camPos = normalize(cameraPosition);",
 					"vec3 halfV = normalize(camPos + Ldir);",
 					"float d = dot(vNormal, normalize(vec3(r*cos(time*speed), r*0.5*sin(time*speed), r*sin(-time*speed))) );",
-					"float specular = pow(clamp(dot(nor, halfV), 0.0, 1.0), 50.0);",
+					"float specular = pow(clamp(dot(nor, halfV), 0.0, 1.0), expVal);",
 					"d = clamp(d, 0.01, 0.78);",
 					"vec4 col = vec4(0.65, 0.7, 0.7, 1.0);",
-					"gl_FragColor = (col * vec4(d, d, d, 1.0)) + vec4(vec3(specular), 1.0) + vec4(0.2, 0.24, 0.29, 1.0);",
+					"gl_FragColor = (col * vec4(d, d, d, 1.0)) + vec4(vec3(specular), 1.0) + vec4(ambR, ambG, ambB, 1.0);",
 					"}"
 				].join( "\n" ),
 			}
@@ -61,6 +82,22 @@
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
 
+
+			//gui
+			let expVal = 50.0;
+			var guiCtrl = {
+    		expVal : 50,
+				ambR : 0.1,
+				ambG : 0.1,
+				ambB : 0.1,
+				amp : 1.0
+  		};
+			var gui = new dat.GUI();
+			gui.add( guiCtrl, "expVal", 1, 100 );
+			gui.add( guiCtrl, "ambR", 0, 1 );
+			gui.add( guiCtrl, "ambG", 0, 1 );
+			gui.add( guiCtrl, "ambB", 0, 1 );
+			gui.add( guiCtrl, "amp", 0, 30 );
 
       init();
       animate();
@@ -82,6 +119,12 @@
       function render(){
         time = performance.now();
         material.uniforms.time.value = time;
+				material.uniforms.expVal.value = guiCtrl.expVal;
+				material.uniforms.expVal.value = guiCtrl.expVal;
+				material.uniforms.ambR.value = guiCtrl.ambR;
+				material.uniforms.ambG.value = guiCtrl.ambG;
+				material.uniforms.ambB.value = guiCtrl.ambB;
+				material.uniforms.amp.value = guiCtrl.amp;
         renderer.render(scene, camera);
       }
 

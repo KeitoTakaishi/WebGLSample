@@ -22,59 +22,53 @@
 
       var ParamsShaderMaterial = {
         uniforms: {
-          "time": {value: 1.0}
+          "time": {value: 1.0},
+					"speed": {value: .001},
+					"uVec2" : { value: new THREE.Vector2( 1, 1 ) },
         },
         vertexShader: [
           "precision mediump float;",
           "attribute vec4 color;",
+
+          "uniform float time;",
+					"uniform float speed;",
+					"uniform vec2 uVec2;",
+
           "varying vec4 vColor;",
+
           "void main() {",
           "vColor = color;",
           "gl_PointSize = 1.5;",
+					//"vec3 p = vec3(position.x, position.y * 10.0 * sin(100.0*(position.x + position.z) + time/1000.0), position.z);",
           "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
           "}"
         ].join( "\n" ),
         fragmentShader: [
           "precision mediump float;",
+
           "uniform float time;",
+					"uniform float speed;",
+					"uniform vec2 uVec2;",
+
           "varying vec4 vColor;",
+
           "void main() {",
-					"gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);",
+          "float t = time * speed;",
+					"float r = 0.5 * sin(t);",
+					"gl_FragColor = vec4(r, uVec2.x, uVec2.y, 1.0);",
+          //"gl_FragColor = vec4( vColor.r * abs(sin(t)), vColor.g * abs(cos(t)), vColor.b * abs(sin(t)), 1.0 );",
           "}"
         ].join( "\n" ),
         //side: THREE.DoubleSide,
         transparent: false
       }
+			v = new THREE.Vector2(1.0, 0.0);
+
       init();
       animate();
 
       function init(){
-				//-----------------
 
-				//sample01
-        // geometry = new THREE.BufferGeometry();
-        // let positions = [];
-        // let colors = [];
-        // let x, y, z;
-        // for(let i = 0; i < particles; i++){
-        //   x = Math.random() * 2.0 - 1.0;
-        //   y = Math.random() * 2.0 - 1.0;
-        //   z = Math.random() * 2.0 - 1.0;
-        //   if(x * x + y * y + z * z <= 1) {
-        //     positions.push(x * 500.0);
-        //     positions.push(y * 10.0);
-        //     positions.push(z * 500.0);
-        //     colors.push(Math.random() * 255.0);
-        //     colors.push(Math.random() * 255.0);
-        //     colors.push(Math.random() * 255.0);
-        //     colors.push(Math.random() * 255.0);
-        //   }
-        // }
-        // let positionAttribute = new THREE.Float32BufferAttribute(positions, 3);
-        // let colorAttribute = new THREE.Uint8BufferAttribute(colors, 4);
-        // colorAttribute.normalized = true;
-        // geometry.addAttribute( 'position', positionAttribute );
-        // geometry.addAttribute( 'color', colorAttribute );
 
 
 				//sample02
@@ -92,9 +86,9 @@
 				    vertices[i * 3 + 0] = vertexPositions[i][0];
 				    vertices[i * 3 + 1] = vertexPositions[i][1];
 				    vertices[i * 3 + 2] = vertexPositions[i][2];
-						colors.push(255.0);
-						colors.push(0.0);
-						colors.push(0.0);
+						colors.push(i * 15.0 + 120);
+						colors.push(i * 25 + 100);
+						colors.push(i * 45.0 + 100);
 						colors.push(255.0);
 
 				}
@@ -126,6 +120,9 @@
       function render(){
         time = performance.now();
         material.uniforms.time.value = time;
+				v.x = 1.0*Math.sin(Math.pow(time, 1.0) * 0.-0001);
+				material.uniforms.speed.value = 0.001;
+				material.uniforms.uVec2.value = new THREE.Vector2(1.0, 1.0);;
         renderer.render(scene, camera);
       }
 
