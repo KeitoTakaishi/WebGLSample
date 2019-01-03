@@ -90,7 +90,7 @@ specularLight
 				ambR : 0.1,
 				ambG : 0.1,
 				ambB : 0.1,
-				amp : 1.0
+				amp : 0.0
   		};
 			var gui = new dat.GUI();
 			gui.add( guiCtrl, "expVal", 1, 100 );
@@ -106,7 +106,9 @@ specularLight
         //var geometry = new THREE.PlaneGeometry(5, 5, 10, 10);
         var geometry = new THREE.SphereGeometry(50, 50, 50);
         material = new THREE.ShaderMaterial(ParamsShaderMaterial);
-        mesh = new THREE.Mesh(geometry, material);
+
+				mesh = new THREE.Mesh(geometry, material);
+
 				//mesh = new THREE.Points(geometry, material);
         scene.add(mesh);
       }

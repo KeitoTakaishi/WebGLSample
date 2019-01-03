@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - buffergeometry [particles]</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				color: #cccccc;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				background-color: #050505;
+				margin: 0px;
+				overflow: hidden;
+			}
+			#info {
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+			}
+
+      #container {
+        background-color: #555500;
+      }
+			a {
+				color: #0080ff;
+			}
+		</style>
+	</head>
+	<body>
+    <div class="test">
+      WelCome to My Portfolio
+    </div>
+
+		<div id="container"></div>
+
+    <!-- Plugin.js --------------------------------------------------------->
+    <script src = "JSlib/jquery.min.js" type="text/javascript"></script>
+    <script src = "t_js/t.min.js" type="text/javascript"></script>
+
+    <!-- Plugin.js --------------------------------------------------------->
+    <!-- Three.js --------------------------------------------------------->
+		<script src="../../libs/three.js"></script>
+		<script src="../../libs/WebGL.js"></script>
+		<script src="../../libs/stats.min.js"></script>
+
+    <!-- PostProcessing -->
+    <script src="../../libs/postprocessing/EffectComposer.js"></script>
+		<script src="../../libs/postprocessing/RenderPass.js"></script>
+		<script src="../../libs/postprocessing/ShaderPass.js"></script>
+		<script src="../../libs/shaders/CopyShader.js"></script>
+		<script src="../../libs/shaders/LuminosityHighPassShader.js"></script>
+    <script src="../../libs/postprocessing/UnrealBloomPass.js"></script>
+    <script src="../../libs/postprocessing/MaskPass.js"></script>
+
+		<script src="../../libs/postprocessing/FilmPass.js"></script>
+    <script src="../../libs/shaders/FilmShader.js"></script>
+
+    <script src="../../libs/shaders/VignetteShader.js"></script>
+    <!-- Three.js --------------------------------------------------------->
+
+		<script>
+      $('.test').t({
+         speed:75,          // タイピングのスピードを指定します。
+         speed_vary:false,  // 「true」にすると人間が入力しているかのように文字ごとのスピードが変わります。
+         delay:false,       // 開始時間を指定します。
+         mistype:false,     // 文字の打ち間違いをする確率を指定します。
+         caret:true,        // 「true」にするとカーソルを非表示する事ができます。
+         blink:false,       // 「true」にするとカーソルを点滅させる事ができます。
+         tag:'span',        // テキストを囲むタグを指定します。
+         repeat:false       // 何回リピートするか指定します。「true」を指定すると、無限にリピートします。
+       });
+
+
+			if ( WEBGL.isWebGLAvailable() === false ) {
+				document.body.appendChild( WEBGL.getWebGLErrorMessage() );
+			}
+			var container, stats;
+			var camera, scene, renderer, material, geometry;
+			var points;
+
+      //--Shader-----------------
+      var ParamsShaderMaterial = {
+        uniforms: {
+          "time": {value: 1.0},
+        },
+
+        vertexShader: [
+
+        "vec3 mod289(vec3 x){",
+        	"return x - floor(x * (1.0 / 289.0)) * 289.0;",
+        "}",
+
+
+        "vec4 mod289(vec4 x){",
+        	"return x - floor(x * (1.0 / 289.0)) * 289.0;",
+        "}",
+
+        "vec4 permute(vec4 x){",
+        	"return mod289(((x * 34.0) + 1.0) * x);",
+        "}",
+
+        "vec3 permute(vec3 x){",
+        	"return mod(((x * 34.0) + 1.0) * x, 289.0);",
+        "}",
+
+        "vec4 taylorInvSqrt(vec4 r){",
+        	"return 1.79284291400159 - 0.85373472095314 * r;",
+        "}",
+
+
+        "float simplexNoise(vec3 v){",
+        	// 定数
+        	"const vec2 C = vec2(1.0 / 6.0, 1.0 / 3.0);",
+          "const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);",
+
+          "vec3 i  = floor(v + dot(v, C.yyy));",
+          "vec3 x0 = v   - i + dot(i, C.xxx);",
+
+          "vec3 g = step(x0.yzx, x0.xyz);",
+          "vec3 l = 1.0 - g;",
+          "vec3 i1 = min(g.xyz, l.zxy);",
+        	"vec3 i2 = max(g.xyz, l.zxy);",
+
+
+          "vec3 x1 = x0 - i1 + 1.0 * C.xxx;",
+          "vec3 x2 = x0 - i2 + 2.0 * C.xxx;",
+          "vec3 x3 = x0 - 1. + 3.0 * C.xxx;",
+          "i = mod289(i);",
+          "vec4 p = permute(permute(permute(i.z + vec4(0.0, i1.z, i2.z, 1.0)) + i.y + vec4(0.0, i1.y, i2.y, 1.0)) + i.x + vec4(0.0, i1.x, i2.x, 1.0));",
+          "float  n_ = 0.142857142857;",
+          "vec3 ns = n_ * D.wyz - D.xzx;",
+          "vec4 j = p - 49.0 * floor(p * ns.z * ns.z);",
+          "vec4 x_ = floor(j * ns.z);",
+          "vec4 y_ = floor(j - 7.0 * x_);",
+          "vec4 x = x_ * ns.x + ns.yyyy;",
+          "vec4 y = y_ * ns.x + ns.yyyy;",
+          "vec4 h = 1.0 - abs(x) - abs(y);",
+          "vec4 b0 = vec4(x.xy, y.xy);",
+          "vec4 b1 = vec4(x.zw, y.zw);",
+          "vec4 s0 = floor(b0) * 2.0 + 1.0;",
+          "vec4 s1 = floor(b1) * 2.0 + 1.0;",
+          "vec4 sh = -step(h, vec4(0.0, 0.0, 0.0, 0.0));",
+          "vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy;",
+          "vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;",
+          "vec3 p0 = vec3(a0.xy, h.x);",
+          "vec3 p1 = vec3(a0.zw, h.y);",
+          "vec3 p2 = vec3(a1.xy, h.z);",
+          "vec3 p3 = vec3(a1.zw, h.w);",
+          "vec4 norm = taylorInvSqrt(vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)));",
+          "p0 *= norm.x;",
+          "p1 *= norm.y;",
+          "p2 *= norm.z;",
+          "p3 *= norm.w;",
+          "vec4 m = max(0.6 - vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3)), 0.0);",
+          "m = m * m;",
+
+        	"return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1),dot(p2, x2), dot(p3, x3)));",
+        "}",
+
+          "precision mediump float;",
+
+          "attribute vec4 color;",
+          "attribute vec3 normals;",
+
+
+          "uniform float time;",
+          "varying vec3 vPos;",
+
+          "void main() {",
+
+          "gl_PointSize = 1.5;",
+          "vec3 p = position;",
+          "vPos = position;",
+          "float amp = 15.0;",
+          "amp = simplexNoise(vec3(floor(p.x), p.z/100.0 , time * 0.00001)) * 100.0;",
+          "p =  p + amp * sin(p.x * 10.0 + p.y * 10. + time / 400.0) * normalize(p);",
+
+          "gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0 );",
+          "}"
+        ].join( "\n" ),
+        fragmentShader: [
+        "vec3 mod289(vec3 x){",
+          "return x - floor(x * (1.0 / 289.0)) * 289.0;",
+        "}",
+
+
+        "vec4 mod289(vec4 x){",
+          "return x - floor(x * (1.0 / 289.0)) * 289.0;",
+        "}",
+
+        "vec4 permute(vec4 x){",
+          "return mod289(((x * 34.0) + 1.0) * x);",
+        "}",
+
+        "vec3 permute(vec3 x){",
+          "return mod(((x * 34.0) + 1.0) * x, 289.0);",
+        "}",
+
+        "vec4 taylorInvSqrt(vec4 r){",
+          "return 1.79284291400159 - 0.85373472095314 * r;",
+        "}",
+
+
+        "float simplexNoise(vec3 v){",
+          // 定数
+          "const vec2 C = vec2(1.0 / 6.0, 1.0 / 3.0);",
+          "const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);",
+
+          "vec3 i  = floor(v + dot(v, C.yyy));",
+          "vec3 x0 = v   - i + dot(i, C.xxx);",
+
+          "vec3 g = step(x0.yzx, x0.xyz);",
+          "vec3 l = 1.0 - g;",
+          "vec3 i1 = min(g.xyz, l.zxy);",
+          "vec3 i2 = max(g.xyz, l.zxy);",
+
+
+          "vec3 x1 = x0 - i1 + 1.0 * C.xxx;",
+          "vec3 x2 = x0 - i2 + 2.0 * C.xxx;",
+          "vec3 x3 = x0 - 1. + 3.0 * C.xxx;",
+          "i = mod289(i);",
+          "vec4 p = permute(permute(permute(i.z + vec4(0.0, i1.z, i2.z, 1.0)) + i.y + vec4(0.0, i1.y, i2.y, 1.0)) + i.x + vec4(0.0, i1.x, i2.x, 1.0));",
+          "float  n_ = 0.142857142857;",
+          "vec3 ns = n_ * D.wyz - D.xzx;",
+          "vec4 j = p - 49.0 * floor(p * ns.z * ns.z);",
+          "vec4 x_ = floor(j * ns.z);",
+          "vec4 y_ = floor(j - 7.0 * x_);",
+          "vec4 x = x_ * ns.x + ns.yyyy;",
+          "vec4 y = y_ * ns.x + ns.yyyy;",
+          "vec4 h = 1.0 - abs(x) - abs(y);",
+          "vec4 b0 = vec4(x.xy, y.xy);",
+          "vec4 b1 = vec4(x.zw, y.zw);",
+          "vec4 s0 = floor(b0) * 2.0 + 1.0;",
+          "vec4 s1 = floor(b1) * 2.0 + 1.0;",
+          "vec4 sh = -step(h, vec4(0.0, 0.0, 0.0, 0.0));",
+          "vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy;",
+          "vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;",
+          "vec3 p0 = vec3(a0.xy, h.x);",
+          "vec3 p1 = vec3(a0.zw, h.y);",
+          "vec3 p2 = vec3(a1.xy, h.z);",
+          "vec3 p3 = vec3(a1.zw, h.w);",
+          "vec4 norm = taylorInvSqrt(vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)));",
+          "p0 *= norm.x;",
+          "p1 *= norm.y;",
+          "p2 *= norm.z;",
+          "p3 *= norm.w;",
+          "vec4 m = max(0.6 - vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3)), 0.0);",
+          "m = m * m;",
+
+          "return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1),dot(p2, x2), dot(p3, x3)));",
+        "}",
+
+          "precision mediump float;",
+
+          "varying vec4 vColor;",
+          "varying vec3 vPos;",
+
+          "uniform float time;",
+          "uniform sampler2D uTex;",
+
+          "void main() {",
+          "vec3 col = vec3(1.0);",
+          "float t = time * 0.0001;",
+          //"gl_FragColor = vec4(col.r ,col.g, col.b, simplexNoise(vec3(floor((vPos.x+vPos.y) / 10.0), fract(vPos.z / 1000.0), pow(t, 5.0))) * 3.0) ;",
+          "gl_FragColor = vec4(col.r ,col.g, col.b,  1.0) ;",
+          "}"
+        ].join( "\n" ),
+        transparent: true
+      }
+
+      //------------------------
+      //----main------------------------------------------------------------------------------------
+
+			init();
+			animate();
+
+			function init() {
+				container = document.getElementById( 'container' );
+				camera = new THREE.PerspectiveCamera( 27, window.innerWidth / window.innerHeight, 5, 13500 );
+				camera.position.z = 3000;
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0x050505 );
+				scene.fog = new THREE.Fog( 0x050505, 2000, 3500 );
+
+
+				geometry = new THREE.BufferGeometry();
+				var positions = [];
+				var colors = [];
+        var normals = [];
+				var color = new THREE.Color();
+				var n = 1000, n2 = n / 2; // particles spread in the cube
+        var theta = 0.0, phi = 0.0;
+
+        /*----sphere--------------
+        0 <= theta <= pi
+        0 <= phi < 2pi
+        x=rsinθcosϕ
+        y=rsinθsinϕ
+        z=rcosθ
+        --------------*/
+        var HeightNum = 50;
+        var WidthNum = 200;
+        var particlesNum = HeightNum * WidthNum;
+        var r = 700.0;
+
+        for(theta = 0.0; theta <= Math.PI; theta+= Math.PI / HeightNum){
+          for(phi = 0.0; phi < 2*Math.PI; phi+= 2*Math.PI / WidthNum){
+            var x = r * Math.sin(theta) * Math.cos(phi);
+  					var y = r * Math.sin(theta) * Math.sin(phi);
+  					var z = r * Math.cos(theta);
+            positions.push( x, y, z );
+            var n = new THREE.Vector3(x, y, z);
+            normals.push(n.normalize());
+  					color.setRGB( 1.0, 1.0, 1.0 );
+  					colors.push( color.r, color.g, color.b );
+          }
+        }
+
+				geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+				geometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+        geometry.addAttribute( 'normals', new THREE.Float32BufferAttribute( normals, 3 ) );
+
+				geometry.computeBoundingSphere();
+
+				//var material = new THREE.PointsMaterial( { size: 15, vertexColors: THREE.VertexColors } );
+        material = new THREE.ShaderMaterial(ParamsShaderMaterial);
+
+
+
+        points = new THREE.Points( geometry, material );
+        //points = new THREE.Mesh( geometry, material );
+        //points = new THREE.Line( geometry, material );
+
+
+				scene.add( points );
+				//
+				renderer = new THREE.WebGLRenderer();
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+
+        // --pass---------------------------
+        // ========
+        // =      =
+        // ========
+        // =
+        // =
+        //----------------------------------
+        var renderScene = new THREE.RenderPass( scene, camera );
+
+        //--Bloom----------------------------
+  			var bloomPass = new THREE.UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+  			bloomPass.renderToScreen = true;
+  			bloomPass.threshold = 0.5;
+  			bloomPass.strength = 2.0;
+  			bloomPass.radius = 0.2;
+        //------------------------------------
+        var effectFilmBW = new THREE.FilmPass( 0.35, 0.5, 2048, true );
+
+        var shaderVignette = THREE.VignetteShader;
+        var effectVignette = new THREE.ShaderPass( shaderVignette );
+        effectVignette.uniforms[ "offset" ].value = 0.95;
+				effectVignette.uniforms[ "darkness" ].value = 1.6;
+
+
+
+
+  			composer = new THREE.EffectComposer( renderer );
+        //composer = new THREE.EffectComposer( renderer, new THREE.WebGLRenderTarget( rtWidth, rtHeight, rtParameters ) );
+  			composer.setSize( window.innerWidth, window.innerHeight );
+  			composer.addPass( renderScene );
+  			composer.addPass( bloomPass );
+        composer.addPass( effectFilmBW );
+        //composer.addPass( effectVignette );
+				//
+				//stats = new Stats();
+				//container.appendChild( stats.dom );
+				//
+				window.addEventListener( 'resize', onWindowResize, false );
+
+        var rtParameters = {
+					minFilter: THREE.LinearFilter,
+					magFilter: THREE.LinearFilter,
+					format: THREE.RGBFormat,
+					stencilBuffer: true
+				};
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+			//
+			function animate() {
+				requestAnimationFrame( animate );
+				render();
+				//stats.update();
+			}
+			function render() {
+				var time = Date.now() * 0.001;
+				points.rotation.x = time * 0.1;
+				points.rotation.y = time * 0.1;
+				//renderer.render( scene, camera );
+        composer.render();
+
+        time = performance.now();
+        material.uniforms.time.value = time;
+
+			}
+		</script>
+
+	</body>
