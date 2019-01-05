@@ -1,0 +1,42 @@
+/*grid*/
+
+.container{
+  font-size: 10px;
+}
+
+.grid-auto-fill,
+.grid-auto-fit {
+  display: grid;
+  border: 1px solid #ddd;
+  grid-auto-rows: 250px;
+  grid-gap: 10px;
+  padding: 10px;
+  margin: 10px 30px 20px;
+  overflow: hidden;
+}
+
+.grid-auto-fill {
+  /*minの値を大きくしておけばいい感じにいく*/
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+.grid-auto-fit {
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+}
+
+.grid-auto-fill > div,
+.grid-auto-fit > div {
+  padding: 10px;
+  background: #ddd;
+}
+
+.grid-auto-fill > img,
+.grid-auto-fit > img {
+  background: #ddd;
+}
+
+.work-image {
+  width : 100%;
+  height : 250px;
+  object-fit: contain;
+}
