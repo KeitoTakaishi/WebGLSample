@@ -1,0 +1,30 @@
+*{
+  margin : 0px;
+  padding: 0px;
+}
+
+body {
+  margin : 0px;
+}
+
+header{
+  color: #000;
+  background-color: #999;
+  width : 100%;
+}
+
+.main {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #ff0000;
+}
+
+ul {
+  list-style: none;
+  display: flex;
+}
+
+ul .work{
+  width: 30%;
+  margin: 5px;
+}
