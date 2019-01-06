@@ -4,35 +4,9 @@
     <meta charset="utf-8">
     <title>MainScene</title>
     <link rel="stylesheet" type="text/css" href="../css/MainStyle.css">
-    <script type="text/javascript" src=../js/test.js></script>
-    <!-- <script type="text/javascript">
-      window.onload = function(){
-        let ParentTargets = document.getElementsByClassName("work-img");
-        let Targets = document.getElementsByClassName("work-des");
-
-        function FuncOver(event){
-          Targets[event.target.eventParam].style.opacity = 1.0;
-        }
-
-        function FuncOut(event){
-          Targets[event.target.eventParam].style.opacity = 0.0;
-        }
-
-        for(var i = 0; i < ParentTargets.length; i++){
-          var index = i;
-          ParentTargets[i].addEventListener("mouseover",FuncOver, false);
-          ParentTargets[i].eventParam = index;
-
-          ParentTargets[i].addEventListener("mouseout",FuncOut, false);
-          ParentTargets[i].eventParam = index;
-        }
-      }
-    </script> -->
-
   </head>
 
   <body>
-
     <header>
       KeitoTakaishi
     </header>
@@ -43,25 +17,28 @@
       </div>
       <div class="work-item">
         <img id = "work-img02" class="work-img" src="../images/02.jpg" alt="">
-        <p class="work-des">test</p>
+        <p id = "work-des02" class="work-des">test</p>
       </div>
       <div class="work-item">
         <img id = "work-img03" class="work-img" src="../images/02.jpg" alt="">
-        <p class="work-des">test</p>
+        <p id = "work-des03" class="work-des">test</p>
       </div>
       <div class="work-item">
         <img id = "work-img04" class="work-img" src="../images/02.jpg" alt="">
-        <p class="work-des">test</p>
+        <p id = "work-des04" class="work-des">test</p>
       </div>
       <div class="work-item">
         <img id = "work-img05" class="work-img" src="../images/02.jpg" alt="">
-        <p class="work-des">test</p>
+        <p id = "work-des05" class="work-des">test</p>
       </div>
       <div class="work-item">
         <img id = "work-img06" class="work-img" src="../images/02.jpg" alt="">
-        <p class="work-des">test</p>
+        <p id = "work-des06" class="work-des">test</p>
       </div>
     </div>
 
+    <script type="text/javascript" src=../js/test.js></script>
+    <script type="text/javascript" src=../js/jquery.min.js></script>
+    <script type="text/javascript" src=../js/TweenMax.min.js></script>
   </body>
 </html>

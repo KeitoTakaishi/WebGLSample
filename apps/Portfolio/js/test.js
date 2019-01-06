@@ -1,23 +1,75 @@
-<script type="text/javascript">
-  window.onload = function(){
-    let ParentTargets = document.getElementsByClassName("work-img");
-    let Targets = document.getElementsByClassName("work-des");
+window.onload = function(){
+  $('body').fadeIn(2000);
 
-    function FuncOver(event){
-      Targets[event.target.eventParam].style.opacity = 1.0;
+  $("#work-des01").mouseover(
+    function(){
+      $("#work-des01").opacity = 1.0;
     }
+  );
 
-    function FuncOut(event){
-      Targets[event.target.eventParam].style.opacity = 0.0;
+  $("#work-img01").mouseover(
+    function(){
+      $("#work-des01").fadeIn();
     }
+  );
 
-    for(var i = 0; i < ParentTargets.length; i++){
-      var index = i;
-      ParentTargets[i].addEventListener("mouseover",FuncOver, false);
-      ParentTargets[i].eventParam = index;
-
-      ParentTargets[i].addEventListener("mouseout",FuncOut, false);
-      ParentTargets[i].eventParam = index;
+  $("#work-img01").mouseout(
+    function(){
+      $("#work-des01").fadeOut();
     }
-  }
-</script>
+  );
+
+  $("#work-img02").mouseover(
+    function(){
+      $("#work-des02").fadeIn();
+    }
+  );
+  $("#work-img02").mouseout(
+    function(){
+      $("#work-des02").fadeOut();
+    }
+  );
+  $("#work-img03").mouseover(
+    function(){
+      $("#work-des03").fadeIn();
+    }
+  );
+  $("#work-img03").mouseout(
+    function(){
+      $("#work-des03").fadeOut();
+    }
+  );
+  $("#work-img04").mouseover(
+    function(){
+      $("#work-des04").fadeIn();
+    }
+  );
+  $("#work-img04").mouseout(
+    function(){
+      $("#work-des04").fadeOut();
+    }
+  );
+
+  $("#work-img05").mouseover(
+    function(){
+      $("#work-des05").fadeIn();
+    }
+  );
+  $("#work-img05").mouseout(
+    function(){
+      $("#work-des05").fadeOut();
+    }
+  );
+
+  $("#work-img06").mouseover(
+    function(){
+      $("#work-des06").fadeIn();
+    }
+  );
+  $("#work-img06").mouseout(
+    function(){
+      $("#work-des06").fadeOut();
+    }
+  );
+
+}

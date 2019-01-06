@@ -2,6 +2,10 @@ $(function() {
   $('body').fadeIn('4500');
 });
 
+setTimeout(function(){
+      $('body').fadeOut('3000');
+},7000);
+
 $('.title').t({
    speed:60,          // タイピングのスピードを指定します。
    speed_vary:true,  // 「true」にすると人間が入力しているかのように文字ごとのスピードが変わります。
