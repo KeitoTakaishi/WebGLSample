@@ -233,8 +233,8 @@
           "vec3 col = vec3(1.0);",
           "float t = time * 0.001;",
           //"gl_FragColor = vec4(col.r ,col.g, col.b, simplexNoise(vec3(floor((vPos.x+vPos.y) / 10.0), fract(vPos.z / 1000.0), pow(t, 5.0))) * 3.0) ;",
-					//"gl_FragColor = vec4(col.r ,col.g, col.b,  0.3 + 2.0 * sin(t + vPos.y)) ;",
-          "gl_FragColor = vec4(.0, .0, .0, 1.0) ;",
+					"gl_FragColor = vec4(col.r ,col.g, col.b,  0.3 + 2.0 * sin(t + vPos.y)) ;",
+          //"gl_FragColor = vec4(.0, .0, .0, 1.0) ;",
           "}"
         ].join( "\n" ),
         transparent: true
@@ -250,9 +250,9 @@
 				camera.position.z = 3000;
 
 				scene = new THREE.Scene();
-				//scene.background = new THREE.Color( 0x050505 );
-				scene.background = new THREE.Color( 0xeeeeee );
-				//scene.fog = new THREE.Fog( 0x050505, 2000, 3500 );
+				scene.background = new THREE.Color( 0x050505 );
+				//scene.background = new THREE.Color( 0xeeeeee );
+				scene.fog = new THREE.Fog( 0x050505, 2000, 3500 );
 
 
 				geometry = new THREE.BufferGeometry();
@@ -324,7 +324,7 @@
   			var bloomPass = new THREE.UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
   			bloomPass.renderToScreen = true;
   			bloomPass.threshold = 0.4;
-  			bloomPass.strength = -0.5;
+  			bloomPass.strength = 0.5;
   			bloomPass.radius = 0.1;
         //------------------------------------
         var effectFilmBW = new THREE.FilmPass( 0.35, 0.5, 2048, true );

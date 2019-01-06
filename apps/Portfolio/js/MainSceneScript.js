@@ -1,3 +1,5 @@
+//MainSceneのjs 
+
 window.onload = function(){
   $('body').fadeIn(2000);
 
@@ -72,4 +74,36 @@ window.onload = function(){
     }
   );
 
+  $("#work-img07").mouseover(
+    function(){
+      $("#work-des07").fadeIn();
+    }
+  );
+  $("#work-img07").mouseout(
+    function(){
+      $("#work-des07").fadeOut();
+    }
+  );
+
+  $("#work-img08").mouseover(
+    function(){
+      $("#work-des08").fadeIn();
+    }
+  );
+  $("#work-img08").mouseout(
+    function(){
+      $("#work-des08").fadeOut();
+    }
+  );
+
+  $("#work-img09").mouseover(
+    function(){
+      $("#work-des09").fadeIn();
+    }
+  );
+  $("#work-img09").mouseout(
+    function(){
+      $("#work-des09").fadeOut();
+    }
+  );
 }

@@ -1,9 +1,10 @@
+// TopScene-js
 $(function() {
-  $('body').fadeIn('4500');
+  $('body').fadeIn('500');
 });
 
 setTimeout(function(){
-      $('body').fadeOut('3000');
+      $('body').fadeOut('500');
 },7000);
 
 $('.title').t({

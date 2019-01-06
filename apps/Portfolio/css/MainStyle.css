@@ -1,5 +1,9 @@
 /* StyleSheet of MainScene */
 
+:root {
+  --img-size: 640px;
+}
+
 *{
   margin : 0px;
   padding: 0px;
@@ -8,35 +12,47 @@
 body {
   margin : 0px;
   display: none;
-  background-color: #000;
+  background-color: #fff;
 }
 
 header{
+  position: relative;
   color: #000;
-  background-color: #ddd;
-  font-size: 60px;
+  background-color: #000;
+  font-size: 45px;
   color: white;
   font-family:serif;
-
   width : 100%;
   height : 120px;
-  margin-left:30px;
-  margin-right: 30px;
+}
+
+#Name {
+  position: absolute;
+  text-align:left;
+  margin-left:20px;
+  margin-top:.5em;
+}
+
+#About{
+  position: absolute;
+  right: 0%;
+  margin-right:20px;
+  margin-top:.5em;
 }
 
 .works{
   display: grid;
-  grid-auto-rows: 960px;
-  grid-gap: 10px;
+  grid-auto-rows: var(--img-size);
+  /* grid-gap: 10px;
   padding: 10px;
   border: 1px solid #ddd;
-  margin: 10px 30px 20px;
+  margin: 10px 30px 20px; */
   overflow: hidden;
-  grid-template-columns: repeat(auto-fill, minmax(960px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--img-size), 1fr));
 }
 .work-item{
   position: relative;
-  width: minmax(960px, 1fr);
+  width: minmax(var(--img-size), 1fr);
 }
 
 .work-img{
@@ -44,8 +60,14 @@ header{
   height: 100%;
   object-fit: cover;
   z-index: 0;
-
+  filter: blur(0.0em);
+  transition: filter 200ms 0s ease;
 }
+
+.work-img:hover{
+  filter: blur(5.0px);
+}
+
 
 .work-des{
   pointer-events: none;
