@@ -1,14 +1,22 @@
-//MainSceneのjs 
+//MainSceneのjs
 
 window.onload = function(){
-  $('body').fadeIn(2000);
+  $('body').fadeIn(500);
+  $("#work-img01").fadeIn(500);
+  $("#work-img02").fadeIn(2000);
+  $("#work-img03").fadeIn(1000);
+  $("#work-img04").fadeIn(2000);
+  $("#work-img05").fadeIn(500);
+  $("#work-img06").fadeIn(1200);
+  $("#work-img07").fadeIn(1200);
+  $("#work-img08").fadeIn(800);
+  $("#work-img09").fadeIn(1200);
 
-  $("#work-des01").mouseover(
-    function(){
-      $("#work-des01").opacity = 1.0;
-    }
-  );
 
+
+
+
+  //---Titleの出現エフェクト
   $("#work-img01").mouseover(
     function(){
       $("#work-des01").fadeIn();
