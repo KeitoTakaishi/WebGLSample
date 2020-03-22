@@ -177,7 +177,7 @@
         // }
         //renderDensity();
         initializeVelocity();
-        console.log("render");
+       //console.log("render");
     };
     //--------------------------------------------------------------------------------------------------------
     //solver functions
